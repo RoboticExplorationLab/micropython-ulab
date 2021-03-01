@@ -14,4 +14,19 @@ print(linalg.det(a))
 print(linalg.det(b))
 print(linalg.det(c))
 
+## test matrix vector multiplication
+A = ulab.array([[1, 2, 3], [4, 5, 6], [7, 8, 7]])
+x = ulab.array([1,2,3])
+b = ulab.linalg.dot(A,x)
 
+# A is a 2d array (3, 3)
+print(A.shape())
+
+# x is a 1d array (3,)
+print(x.shape())
+
+# b is a 1d array (3,)
+print(b.shape())
+
+# A*x = b
+print(b)
