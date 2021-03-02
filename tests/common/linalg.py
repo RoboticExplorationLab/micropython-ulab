@@ -30,3 +30,10 @@ print(b.shape())
 
 # A*x = b
 print(b)
+
+## test determinant of a matrix
+A = ulab.array([[6, 1, 1], [4, -2, 5], [2, 8, 7]])
+det = ulab.linalg.det(A)
+
+# det is a float containing the determinant
+print(det)
