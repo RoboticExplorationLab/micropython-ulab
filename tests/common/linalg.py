@@ -1,5 +1,6 @@
 import ulab
 from ulab import linalg
+from ulab import user
 
 a = ulab.array([[1, 2], [3, 4]])
 print(linalg.inv(a))
@@ -72,3 +73,19 @@ trace = ulab.linalg.trace(A)
 
 # trace is a float containing the trace of the matrix
 print(trace)
+
+## test eigen values of a matrix
+# A = ulab.array([[6.0, 1.0, 1.0], [4.0, -2.0, 5.0], [2.0, 8.0, 7.0]])
+# print(ulab.linalg.eig(A))
+
+## test back substitution 
+U = ulab.array([[1, 3, 3], [0, 2, 2], [0, 0, 2]])
+b = ulab.array([12, 6, 4])
+# arg 1 has to be an upper triangular matrix
+print(user.back_sub(U, b))
+
+## test forward substitution 
+L = ulab.array([[1, 0, 0], [2, 2, 0], [1, 3, 2]])
+b = ulab.array([4, 6, 12])
+# arg 1 has to be a lower triangular matrix
+print(user.forw_sub(L, b))

@@ -247,7 +247,7 @@
 
 // user-defined module
 #ifndef ULAB_USER_MODULE
-#define ULAB_USER_MODULE                (0)
+#define ULAB_USER_MODULE                (1)
 #endif
 
 #endif

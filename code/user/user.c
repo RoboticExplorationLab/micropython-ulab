@@ -80,9 +80,83 @@ static mp_obj_t user_square(mp_obj_t arg) {
 
 MP_DEFINE_CONST_FUN_OBJ_1(user_square_obj, user_square);
 
+static mp_obj_t back_sub(mp_obj_t _U, mp_obj_t _b) {
+
+    if(!MP_OBJ_IS_TYPE(_U, &ulab_ndarray_type) || !MP_OBJ_IS_TYPE(_b, &ulab_ndarray_type)) {
+        mp_raise_TypeError(translate("arguments must be ndarrays"));
+    }
+
+    ndarray_obj_t *U = MP_OBJ_TO_PTR(_U);
+    ndarray_obj_t *b = MP_OBJ_TO_PTR(_b);
+    
+    if(!ndarray_is_dense(U) || !ndarray_is_dense(b)) {
+        mp_raise_TypeError(translate("input must be a dense ndarray"));
+    }
+
+    ndarray_obj_t *x = ndarray_new_dense_ndarray(b->ndim, b->shape, b->dtype);
+    mp_float_t *x_arr = (mp_float_t *)x->array;
+    
+    mp_float_t *U_arr = (mp_float_t *)U->array;
+    mp_float_t *b_arr = (mp_float_t *)b->array;
+
+    size_t U_rows = U->shape[ULAB_MAX_DIMS - 2];
+    size_t U_cols = U->shape[ULAB_MAX_DIMS - 1];
+
+    for (size_t i = U_rows - 1; i < U_rows; i--) {
+        mp_float_t sum = 0.0;
+        for (size_t j = i + 1; j < U_cols; j++) {
+            sum += (*(U_arr + ((i * U_cols) + j)))
+                        * (*(x_arr + j)); 
+        }
+        *(x_arr + i) = ((*(b_arr + i)) - sum) / (*(U_arr + ((i * U_cols) + i)));
+    }
+
+    return MP_OBJ_FROM_PTR(x);
+}
+
+MP_DEFINE_CONST_FUN_OBJ_2(user_back_sub_obj, back_sub);
+
+static mp_obj_t forw_sub(mp_obj_t _L, mp_obj_t _b) {
+
+    if(!MP_OBJ_IS_TYPE(_L, &ulab_ndarray_type) || !MP_OBJ_IS_TYPE(_b, &ulab_ndarray_type)) {
+        mp_raise_TypeError(translate("arguments must be ndarrays"));
+    }
+
+    ndarray_obj_t *L = MP_OBJ_TO_PTR(_L);
+    ndarray_obj_t *b = MP_OBJ_TO_PTR(_b);
+    
+    if(!ndarray_is_dense(L) || !ndarray_is_dense(b)) {
+        mp_raise_TypeError(translate("input must be a dense ndarray"));
+    }
+
+    ndarray_obj_t *x = ndarray_new_dense_ndarray(b->ndim, b->shape, b->dtype);
+    mp_float_t *x_arr = (mp_float_t *)x->array;
+    
+    mp_float_t *L_arr = (mp_float_t *)L->array;
+    mp_float_t *b_arr = (mp_float_t *)b->array;
+
+    size_t L_rows = L->shape[ULAB_MAX_DIMS - 2];
+    size_t L_cols = L->shape[ULAB_MAX_DIMS - 1];
+
+    for (size_t i = 0; i < L_rows; i++) {
+        mp_float_t sum = 0.0;
+        for (size_t j = 0; j < i; j++) {
+            sum += (*(L_arr + ((i * L_cols) + j)))
+                        * (*(x_arr + j)); 
+        }
+        *(x_arr + i) = ((*(b_arr + i)) - sum) / (*(L_arr + ((i * L_cols) + i)));
+    }
+
+    return MP_OBJ_FROM_PTR(x);
+}
+
+MP_DEFINE_CONST_FUN_OBJ_2(user_forw_sub_obj, forw_sub);
+
 STATIC const mp_rom_map_elem_t ulab_user_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_user) },
     { MP_OBJ_NEW_QSTR(MP_QSTR_square), (mp_obj_t)&user_square_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_back_sub), (mp_obj_t)&user_back_sub_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_forw_sub), (mp_obj_t)&user_forw_sub_obj },
 };
 
 STATIC MP_DEFINE_CONST_DICT(mp_module_ulab_user_globals, ulab_user_globals_table);

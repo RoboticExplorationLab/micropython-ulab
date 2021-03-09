@@ -20,3 +20,5 @@ array([14.0, 32.0, 44.0], dtype=float64)
 14.14213562373095
 11.0
 4.0
+array([3.0, 1.0, 2.0], dtype=float64)
+array([4.0, -1.0, 5.5], dtype=float64)
